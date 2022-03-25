@@ -1,0 +1,1 @@
+ffmpeg -r 60 -i out$1/board%d.png -vcodec mpeg4 -y simulation.mp4
