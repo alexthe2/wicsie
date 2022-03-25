@@ -8,10 +8,11 @@ type RandomMovement struct {
 	moveX, moveY float64
 
 	timeToChange int
+	ttcMax       int
 }
 
-func CreateRandomMovement() *RandomMovement {
-	movement := RandomMovement{}
+func CreateRandomMovement(ttcMax int) *RandomMovement {
+	movement := RandomMovement{ttcMax: ttcMax}
 	movement.generateRandomMovement()
 
 	return &movement
@@ -30,5 +31,5 @@ func (movement *RandomMovement) generateRandomMovement() {
 	movement.moveX = rand.Float64() - 0.5
 	movement.moveY = rand.Float64() - 0.5
 
-	movement.timeToChange = rand.Intn(1000) + 1000
+	movement.timeToChange = rand.Intn(movement.ttcMax) + 10
 }

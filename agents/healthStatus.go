@@ -17,7 +17,7 @@ func (status Status) GetColor() (float64, float64, float64) {
 		return 0, 1, 0
 
 	case Infected:
-		return 1, 0.8, 0.79
+		return 1, 0, 0
 
 	case UnknownInfected:
 		return 1, 0, 0

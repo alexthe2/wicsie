@@ -16,17 +16,18 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	width := 1500
-	height := 1000
+	width := 2000
+	height := 1100
 
-	const agents = 1000
+	const agents = 2000
 	const steps = 2000
 
 	createMovement := func() agents2.Movement {
-		return agents2.CreateRandomMovement()
+		return agents2.CreateRandomMovement(300)
 	}
 
-	simu := simulation.CreateSimulation(agents, width, height, createMovement, agents2.CreateNoSpreading())
+	simu := simulation.CreateSimulation(agents, width, height, createMovement, agents2.CreateOnTouchSpreading())
+	simu.InitInfect(0.01)
 	board := drawing.CreateBoard(width, height)
 
 	for i := 0; i < steps; i++ {

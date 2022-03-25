@@ -10,3 +10,7 @@ func CreateNoSpreading() *NoSpreading {
 func (_ *NoSpreading) ModifyHealth(_ []*Agent) {
 
 }
+
+func (_ *NoSpreading) Infect(_ *Agent) {
+
+}

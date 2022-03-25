@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"log"
+	"math/rand"
 	"wicsie/agents"
 	"wicsie/drawing"
 )
@@ -24,6 +25,14 @@ func CreateSimulation(amount int, width int, height int, movement func() agents.
 	}
 
 	return sim
+}
+
+func (sim *Simulation) InitInfect(probability float64) {
+	for _, agent := range sim.agents {
+		if rand.Float64() < probability {
+			sim.spreading.Infect(agent)
+		}
+	}
 }
 
 func (sim *Simulation) Step() {
