@@ -12,14 +12,16 @@ type GridMovement struct {
 	timeToChange int
 	ttcMax       int
 
-	grid *GridMap
+	grid         *GridMap
+	heatChunkMap [][]int
 }
 
-func CreateGridMovement(ttcMax int, grid *GridMap) *GridMovement {
+func CreateGridMovement(ttcMax int, grid *GridMap, heatChunkMap [][]int) *GridMovement {
 	movement := GridMovement{
 		ttcMax:       ttcMax,
 		timeToChange: 0,
 		grid:         grid,
+		heatChunkMap: heatChunkMap,
 	}
 
 	return &movement
@@ -52,9 +54,15 @@ func (movement *GridMovement) generateMovementBehaviour(agent Agent) {
 		jBest := 0
 		for _, i := range xNeighbours {
 			for _, j := range yNeighbours {
-				if xChunkAgent+i > 0 && yChunkAgent+j > 0 {
+				if xChunkAgent+i > 0 && yChunkAgent+j > 0 /* && xChunkAgent+i < width && yChunkAgent+j < height */ {
 					chunk := movement.grid.Cells[xChunkAgent+i][yChunkAgent+j]
-					score := chunk.Healthy + chunk.Cured - chunk.Infected
+					score := 0
+					if movement.heatChunkMap[xChunkAgent+i][yChunkAgent+j] == 1 {
+						score = -100
+					} else {
+						score = chunk.Healthy + chunk.Cured - chunk.Infected
+					}
+
 					if score > maxScore {
 						maxScore = score
 						iBest = i

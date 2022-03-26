@@ -19,7 +19,7 @@ func main() {
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
 	rand.Seed(time.Now().UnixNano())
 
-	heatMap, colorMap, width, height := heatMapDecoder.LoadAndDecode("population.png")
+	heatMap, heatChunkMap, colorMap, width, height := heatMapDecoder.LoadAndDecode("population.png")
 	mask, err := gg.LoadImage("europe.png")
 	if err != nil {
 		log.Fatalf("Could not load mask: %v", err)
@@ -36,7 +36,7 @@ func main() {
 	grid := agents.CreateGridMap(width, height, 3)
 
 	createMovement := func() agents.Movement {
-		return agents.CreateGridMovement(100, grid)
+		return agents.CreateGridMovement(100, grid, heatChunkMap)
 	}
 
 	simu := simulation.CreateSimulation(simulation.Config{
@@ -59,8 +59,8 @@ func main() {
 		board.SaveBoard(fmt.Sprintf("out%s/boardgrid%d.png", *appendix, i))
 
 		simu.Step()
-		//simu.DrawToBoard(board)
-		//board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
+		simu.DrawToBoard(board)
+		board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
 	}
 
 }
