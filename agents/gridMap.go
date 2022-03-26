@@ -36,5 +36,33 @@ func CreateGridMap(width, height, chunkSize int) *GridMap {
 }
 
 func (gridMap *GridMap) UpdateGridMap(agents []*Agent) {
+	gridMap.clearGridMap()
+}
 
+func (gridMap *GridMap) clearGridMap() {
+	for i := 0; i < gridMap.CountX; i++ {
+		for j := 0; j < gridMap.CountY; j++ {
+			gridMap.Cells[i][j] = Cell{
+				Agents: make([]*Agent, 0),
+			}
+		}
+	}
+}
+
+func (gridMap *GridMap) recalculateGridMap(agents []*Agent) {
+	for _, agent := range agents {
+		corX := int(agent.X / float64(gridMap.chunkSize))
+		corY := int(agent.Y / float64(gridMap.chunkSize))
+		gridMap.Cells[corX][corY].Agents = append(gridMap.Cells[corX][corY].Agents, agent)
+		switch agent.Health {
+		case Incubated:
+		case Healthy:
+			gridMap.Cells[corX][corY].Healthy++
+		case Infected:
+		case UnknownInfected:
+			gridMap.Cells[corX][corY].Infected++
+		case Cured:
+			gridMap.Cells[corX][corY].Cured++
+		}
+	}
 }
