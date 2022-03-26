@@ -31,7 +31,7 @@ func main() {
 	}
 
 	simu := simulation.CreateSimulation(simulation.Config{
-		Weight:    1,
+		Weight:    .2,
 		Width:     float64(width),
 		Height:    float64(height),
 		Movement:  createMovement,
@@ -42,7 +42,7 @@ func main() {
 	})
 
 	simu.InitInfect(0.01)
-	board := drawing.CreateBoard(width, height)
+	board := drawing.CreateBoard(width*3, height*3)
 	for i := 0; i < steps; i++ {
 		simu.Step()
 		simu.DrawToBoard(board)

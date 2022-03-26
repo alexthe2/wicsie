@@ -34,12 +34,11 @@ func CreateSimulation(config Config) *Simulation {
 
 	for y := 0.0; y < config.Height; y += 1 {
 		for x := 0.0; x < config.Width; x += 1 {
-			for i := 0; i < heatMapDecoder.GetMultiplier(config.LegendIndex, config.HeatMap[int(y)][int(x)]); i++ {
-				//num := rand.Intn(800)
-				//chance := int(float64(heatMapDecoder.GetMultiplier(config.LegendIndex, config.HeatMap[int(y)][int(x)])) * 0.25)
-				//if num < chance {
-				sim.agents = append(sim.agents, agents.CreateAgent(x+(rand.Float64()*2-1), y+(rand.Float64()*2-1), config.Width, config.Height, config.Movement()))
-				//}
+			n := int(config.Weight * float64(heatMapDecoder.GetMultiplier(config.LegendIndex, config.HeatMap[int(y)][int(x)])))
+			for i := 0; i < n; i++ {
+				if rand.Float64() < 0.5 {
+					sim.agents = append(sim.agents, agents.CreateAgent(x+rV(), y+rV(), config.Width, config.Height, config.Movement()))
+				}
 			}
 		}
 	}
@@ -73,4 +72,8 @@ func (sim *Simulation) Step() {
 
 func (sim *Simulation) DrawToBoard(board *drawing.Board) {
 	board.DrawAgents(sim.agents)
+}
+
+func rV() float64 {
+	return rand.Float64()*2 - 1
 }

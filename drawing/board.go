@@ -37,7 +37,7 @@ func (board *Board) SaveBoard(filename string) {
 }
 
 func (board *Board) drawAgent(agent *agents.Agent) {
-	board.ctx.DrawCircle(math.Mod(agent.X, float64(board.w))*2, math.Mod(agent.Y, float64(board.h))*2, 2)
+	board.ctx.DrawCircle(math.Mod(agent.X, float64(board.w))*3, math.Mod(agent.Y, float64(board.h))*3, 2)
 	board.ctx.SetRGB(agent.Health.GetColor())
 	board.ctx.Fill()
 }
