@@ -6,7 +6,7 @@ import (
 	"wicsie/constants"
 )
 
-type MovementBehaviour struct {
+type GridMovement struct {
 	moveX, moveY float64
 
 	timeToChange int
@@ -15,26 +15,26 @@ type MovementBehaviour struct {
 	grid *GridMap
 }
 
-func CreateMovementBehaviour(ttcMax int, grid *GridMap, agent Agent) *MovementBehaviour {
-	movement := MovementBehaviour{
-		ttcMax: ttcMax,
-		grid:   grid,
+func CreateGridMovement(ttcMax int, grid *GridMap) *GridMovement {
+	movement := GridMovement{
+		ttcMax:       ttcMax,
+		timeToChange: 0,
+		grid:         grid,
 	}
-	movement.generateMovementBehaviour(agent)
 
 	return &movement
 }
 
-func (movement *MovementBehaviour) Move(_ []Agent, agent Agent) (float64, float64) {
+func (movement *GridMovement) Move(_ []Agent, agent Agent) (float64, float64) {
 	movement.timeToChange--
-	if movement.timeToChange == 0 {
+	if movement.timeToChange <= 0 {
 		movement.generateMovementBehaviour(agent)
 	}
 
 	return movement.moveX, movement.moveY
 }
 
-func (movement *MovementBehaviour) generateMovementBehaviour(agent Agent) {
+func (movement *GridMovement) generateMovementBehaviour(agent Agent) {
 	xChunkAgent := int(math.Ceil(float64(agent.X) / float64(constants.KChunkSize)))
 	yChunkAgent := int(math.Ceil(float64(agent.Y) / float64(constants.KChunkSize)))
 	decisionProbability := rand.Float64()
