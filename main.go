@@ -33,9 +33,8 @@ func main() {
 
 	const steps = 1000
 
-	grid := agents.CreateGridMap(width, height, 5)
-	createMovement := func(agent Agent) agents.Movement {
-		return agents.CreateMovementBehaviour(10, grid)
+	createMovement := func() agents.Movement {
+		return agents.CreateRandomMovement(100)
 	}
 
 	simu := simulation.CreateSimulation(simulation.Config{
@@ -43,7 +42,7 @@ func main() {
 		Width:     float64(width),
 		Height:    float64(height),
 		Movement:  createMovement,
-		Spreading: agents.CreateOnTouchSpreading(),
+		Spreading: agents.CreateNoSpreading(),
 
 		HeatMap:     heatMap,
 		LegendIndex: legend,
@@ -51,6 +50,7 @@ func main() {
 
 	simu.InitInfect(0.01)
 	board := drawing.CreateBoard(width, height, mask, 1)
+	grid := agents.CreateGridMap(width, height, 3)
 
 	for i := 0; i < steps; i++ {
 		grid.UpdateGridMap(simu.GetAgents())

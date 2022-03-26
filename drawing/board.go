@@ -59,7 +59,13 @@ func (board *Board) DrawGridMap(gridMap agents.GridMap) {
 			for i := 0; i < gridMap.ChunkSize; i++ {
 				for j := 0; j < gridMap.ChunkSize; j++ {
 					board.ctx.SetPixel(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j)
-					board.ctx.SetRGBA(r, g, b, float64(board.mask.At(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j).(color.NRGBA).A)/dim(count))
+
+					if board.mask.At(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j).(color.NRGBA).A == 0 {
+						board.ctx.SetRGBA(0, 0, 0, 0)
+					} else {
+						board.ctx.SetRGBA(r, g, b, dim(count))
+					}
+
 					board.ctx.Fill()
 				}
 			}
@@ -89,4 +95,4 @@ func colorForCell(cell agents.Cell) (float64, float64, float64, int) {
 	return r, g, b, dominantCount
 }
 
-func dim(count int) float64 { return math.Min(255, float64(count)/100) }
+func dim(count int) float64 { return math.Min(255, float64(count)/20) }
