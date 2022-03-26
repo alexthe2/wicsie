@@ -101,3 +101,8 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+/.DS_Store
+/.idea
+/simulation_big_no_masks.mp4
+/simulation_damped.mp4
+/simulation_small_example.mp4
