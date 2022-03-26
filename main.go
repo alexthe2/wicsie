@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/fogleman/gg"
 	"image"
 	"image/png"
+	"log"
 	"math/rand"
 	"time"
 	"wicsie/agents"
@@ -18,6 +20,11 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	heatMap, colorMap, width, height := heatMapDecoder.LoadAndDecode("population.png")
+	mask, err := gg.LoadImage("mask.png")
+	if err != nil {
+		log.Fatalf("Could not load mask: %v", err)
+	}
+
 	fmt.Printf("%v\n", colorMap)
 	legend := heatMapDecoder.ReadPredefined()
 
@@ -42,7 +49,7 @@ func main() {
 	})
 
 	simu.InitInfect(0.01)
-	board := drawing.CreateBoard(width*3, height*3)
+	board := drawing.CreateBoard(width*3, height*3, mask)
 	for i := 0; i < steps; i++ {
 		simu.Step()
 		simu.DrawToBoard(board)
