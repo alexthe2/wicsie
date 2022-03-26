@@ -74,6 +74,10 @@ func (sim *Simulation) DrawToBoard(board *drawing.Board) {
 	board.DrawAgents(sim.agents)
 }
 
+func (sim *Simulation) GetAgents() []*agents.Agent {
+	return sim.agents
+}
+
 func rV() float64 {
 	return rand.Float64()*2 - 1
 }

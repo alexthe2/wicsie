@@ -20,7 +20,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	heatMap, colorMap, width, height := heatMapDecoder.LoadAndDecode("population.png")
-	mask, err := gg.LoadImage("mask.png")
+	mask, err := gg.LoadImage("europe.png")
 	if err != nil {
 		log.Fatalf("Could not load mask: %v", err)
 	}
@@ -49,8 +49,14 @@ func main() {
 	})
 
 	simu.InitInfect(0.01)
-	board := drawing.CreateBoard(width*3, height*3, mask)
+	board := drawing.CreateBoard(width, height, mask, 1)
+	grid := agents.CreateGridMap(width, height, 5)
+
 	for i := 0; i < steps; i++ {
+		grid.UpdateGridMap(simu.GetAgents())
+		board.DrawGridMap(*grid)
+		board.SaveBoard(fmt.Sprintf("out%s/boardgrid%d.png", *appendix, i))
+
 		simu.Step()
 		simu.DrawToBoard(board)
 		board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))

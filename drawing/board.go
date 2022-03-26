@@ -3,6 +3,7 @@ package drawing
 import (
 	"github.com/fogleman/gg"
 	"image"
+	"image/color"
 	"math"
 	"wicsie/agents"
 )
@@ -50,14 +51,38 @@ func (board *Board) drawAgent(agent *agents.Agent) {
 	board.ctx.Fill()
 }
 
-func (board *Board) drawGridMap(gridMap agents.GridMap) {
-	for x := 0; x < board.w; x++ {
-		for y := 0; y < board.h; y++ {
-			pixel := gridMap.
+func (board *Board) DrawGridMap(gridMap agents.GridMap) {
+	for x := 0; x < gridMap.CountX; x++ {
+		for y := 0; y < gridMap.CountY; y++ {
+			r, g, b := colorForCell(gridMap.GetCell(x, y))
+			for i := 0; i < gridMap.ChunkSize; i++ {
+				for j := 0; j < gridMap.ChunkSize; j++ {
+					board.ctx.SetPixel(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j)
+					board.ctx.SetRGBA(r, g, b, float64(board.mask.At(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j).(color.NRGBA).A)/255.0)
+					board.ctx.Fill()
+				}
+			}
 		}
 	}
 }
 
-func chunkFor(x, y, cw, ch int) (int, int) {
-	return x / cw, y / ch
+func colorForCell(cell agents.Cell) (float64, float64, float64) {
+	dominant := agents.Healthy
+	dominantCount := cell.Healthy
+
+	if cell.Infected > dominantCount {
+		dominant = agents.Infected
+		dominantCount = cell.Infected
+	}
+
+	if cell.Cured > dominantCount {
+		dominant = agents.Cured
+		dominantCount = cell.Cured
+	}
+
+	if dominantCount == 0 {
+		return 0, 0, 0
+	}
+
+	return dominant.GetColor()
 }
