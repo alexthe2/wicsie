@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"wicsie/agents"
 	"wicsie/drawing"
+	"wicsie/heatMapDecoder"
 )
 
 type Simulation struct {
@@ -14,14 +15,33 @@ type Simulation struct {
 	spreading agents.Change
 }
 
-func CreateSimulation(amount int, width int, height int, movement func() agents.Movement, spreading agents.Change) *Simulation {
+type Config struct {
+	Weight        float64
+	Width, Height float64
+	Movement      func() agents.Movement
+	Spreading     agents.Change
+
+	HeatMap     [][]int
+	LegendIndex []heatMapDecoder.LegendIndex
+}
+
+func CreateSimulation(config Config) *Simulation {
 	sim := new(Simulation)
 	sim.step = 0
-	sim.spreading = spreading
 
-	sim.agents = make([]*agents.Agent, amount)
-	for i := 0; i < amount; i++ {
-		sim.agents[i] = agents.CreateAgentAtRandomPosition(float64(width), float64(height), movement())
+	sim.spreading = config.Spreading
+	sim.agents = make([]*agents.Agent, 0)
+
+	for y := 0.0; y < config.Height; y += 1 {
+		for x := 0.0; x < config.Width; x += 1 {
+			for i := 0; i < heatMapDecoder.GetMultiplier(config.LegendIndex, config.HeatMap[int(y)][int(x)]); i++ {
+				//num := rand.Intn(800)
+				//chance := int(float64(heatMapDecoder.GetMultiplier(config.LegendIndex, config.HeatMap[int(y)][int(x)])) * 0.25)
+				//if num < chance {
+				sim.agents = append(sim.agents, agents.CreateAgent(x+(rand.Float64()*2-1), y+(rand.Float64()*2-1), config.Width, config.Height, config.Movement()))
+				//}
+			}
+		}
 	}
 
 	return sim

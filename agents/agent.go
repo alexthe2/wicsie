@@ -13,6 +13,17 @@ type Agent struct {
 	Movement Movement
 }
 
+func CreateAgent(x, y, width, height float64, movement Movement) *Agent {
+	return &Agent{
+		X:        x,
+		Y:        y,
+		width:    width,
+		height:   height,
+		Health:   Healthy,
+		Movement: movement,
+	}
+}
+
 func CreateAgentAtRandomPosition(width, height float64, movement Movement) *Agent {
 	return &Agent{
 		X:        float64(rand.Intn(int(width))),

@@ -5,7 +5,8 @@ import (
 	"math/rand"
 )
 
-const consideredTouch = 50
+const consideredTouchBase = 20
+const consideredTouchVariance = 10
 
 const timeUntilIncubation = 6
 const timeUntilSpreadBase = 12
@@ -88,7 +89,7 @@ func (spreading *OnTouchSpreading) newInfections(agents []*Agent) {
 		}
 
 		for _, partner := range agents {
-			if partner.Health != Healthy || distance(*agent, *partner) > consideredTouch {
+			if partner.Health != Healthy || distance(*agent, *partner) > float64(consideredTouchBase+varianceBoth(consideredTouchVariance)) {
 				continue
 			}
 

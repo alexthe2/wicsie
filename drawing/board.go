@@ -15,8 +15,8 @@ type Board struct {
 func CreateBoard(width, height int) *Board {
 	return &Board{
 		ctx: gg.NewContext(width, height),
-		w:   width,
-		h:   height,
+		w:   width * 2,
+		h:   height * 2,
 	}
 }
 
@@ -37,7 +37,7 @@ func (board *Board) SaveBoard(filename string) {
 }
 
 func (board *Board) drawAgent(agent *agents.Agent) {
-	board.ctx.DrawCircle(math.Mod(agent.X, float64(board.w)), math.Mod(agent.Y, float64(board.h)), 3)
+	board.ctx.DrawCircle(math.Mod(agent.X, float64(board.w))*2, math.Mod(agent.Y, float64(board.h))*2, 2)
 	board.ctx.SetRGB(agent.Health.GetColor())
 	board.ctx.Fill()
 }
