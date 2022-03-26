@@ -33,8 +33,10 @@ func main() {
 
 	const steps = 1000
 
+	grid := agents.CreateGridMap(width, height, 3)
+
 	createMovement := func() agents.Movement {
-		return agents.CreateRandomMovement(100)
+		return agents.CreateGridMovement(100, grid)
 	}
 
 	simu := simulation.CreateSimulation(simulation.Config{
@@ -50,7 +52,6 @@ func main() {
 
 	simu.InitInfect(0.01)
 	board := drawing.CreateBoard(width, height, mask, 1)
-	grid := agents.CreateGridMap(width, height, 3)
 
 	for i := 0; i < steps; i++ {
 		grid.UpdateGridMap(simu.GetAgents())
