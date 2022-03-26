@@ -18,7 +18,7 @@ func CreateRandomMovement(ttcMax int) *RandomMovement {
 	return &movement
 }
 
-func (movement *RandomMovement) Move(_ []Agent, _ Status) (float64, float64) {
+func (movement *RandomMovement) Move(_ []Agent, _ Agent) (float64, float64) {
 	movement.timeToChange--
 	if movement.timeToChange == 0 {
 		movement.generateRandomMovement()

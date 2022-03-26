@@ -36,7 +36,7 @@ func CreateAgentAtRandomPosition(width, height float64, movement Movement) *Agen
 }
 
 func (agent *Agent) Move(agents []Agent) {
-	dx, dy := agent.Movement.Move(agents, agent.Health)
+	dx, dy := agent.Movement.Move(agents, *agent)
 	agent.X = math.Mod(agent.X+dx, agent.width)
 	agent.Y = math.Mod(agent.Y+dy, agent.height)
 
