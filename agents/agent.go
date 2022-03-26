@@ -39,4 +39,12 @@ func (agent *Agent) Move(agents []Agent) {
 	dx, dy := agent.Movement.Move(agents, agent.Health)
 	agent.X = math.Mod(agent.X+dx, agent.width)
 	agent.Y = math.Mod(agent.Y+dy, agent.height)
+
+	if agent.X < 0 {
+		agent.X += agent.width
+	}
+
+	if agent.Y < 0 {
+		agent.Y += agent.height
+	}
 }

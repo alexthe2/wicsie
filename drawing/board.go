@@ -54,11 +54,12 @@ func (board *Board) drawAgent(agent *agents.Agent) {
 func (board *Board) DrawGridMap(gridMap agents.GridMap) {
 	for x := 0; x < gridMap.CountX; x++ {
 		for y := 0; y < gridMap.CountY; y++ {
-			r, g, b := colorForCell(gridMap.GetCell(x, y))
+			r, g, b, count := colorForCell(gridMap.GetCell(x, y))
+
 			for i := 0; i < gridMap.ChunkSize; i++ {
 				for j := 0; j < gridMap.ChunkSize; j++ {
 					board.ctx.SetPixel(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j)
-					board.ctx.SetRGBA(r, g, b, float64(board.mask.At(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j).(color.NRGBA).A)/255.0)
+					board.ctx.SetRGBA(r, g, b, float64(board.mask.At(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j).(color.NRGBA).A)/dim(count))
 					board.ctx.Fill()
 				}
 			}
@@ -66,7 +67,7 @@ func (board *Board) DrawGridMap(gridMap agents.GridMap) {
 	}
 }
 
-func colorForCell(cell agents.Cell) (float64, float64, float64) {
+func colorForCell(cell agents.Cell) (float64, float64, float64, int) {
 	dominant := agents.Healthy
 	dominantCount := cell.Healthy
 
@@ -81,8 +82,11 @@ func colorForCell(cell agents.Cell) (float64, float64, float64) {
 	}
 
 	if dominantCount == 0 {
-		return 0, 0, 0
+		return 0, 0, 0, 0
 	}
 
-	return dominant.GetColor()
+	r, g, b := dominant.GetColor()
+	return r, g, b, dominantCount
 }
+
+func dim(count int) float64 { return math.Min(255, float64(count)/100) }

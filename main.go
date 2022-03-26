@@ -34,7 +34,7 @@ func main() {
 	const steps = 1000
 
 	createMovement := func() agents.Movement {
-		return agents.CreateRandomMovement(10)
+		return agents.CreateRandomMovement(100)
 	}
 
 	simu := simulation.CreateSimulation(simulation.Config{
@@ -58,8 +58,8 @@ func main() {
 		board.SaveBoard(fmt.Sprintf("out%s/boardgrid%d.png", *appendix, i))
 
 		simu.Step()
-		simu.DrawToBoard(board)
-		board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
+		//simu.DrawToBoard(board)
+		//board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
 	}
 
 }

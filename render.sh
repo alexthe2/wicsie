@@ -1,1 +1,1 @@
-ffmpeg -r 60 -i out$1/board%d.png -vcodec mpeg4 -y simulation.mp4
+ffmpeg -r 60 -i out$1/boardgrid%d.png -c:v huffyuv simulation.avi
