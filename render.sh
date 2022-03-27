@@ -1,1 +1,1 @@
-ffmpeg -r 10 -i out$1/boardgrid%d.png -y -vcodec png simulation.mov
+ffmpeg -r 10 -i out$1/boardgrid%d.png -y -vcodec png simulation12.mov

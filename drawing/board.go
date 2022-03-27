@@ -77,11 +77,17 @@ func colorForCell(cell agents.Cell) (float64, float64, float64, float64) {
 	all := cell.Healthy + cell.Infected + cell.Cured
 	healthy := float64(cell.Healthy) / float64(all)
 	infected := float64(cell.Infected) / float64(all)
-	//cured := float64(cell.Cured) / float64(all)
+	cured := float64(cell.Cured) / float64(all)
 
 	r := 0.05 + 0.95*infected
 	g := 0.05 + 0.95*healthy
-	b := 0.05
+	b := 0.0
+
+	if cured > healthy+infected {
+		r = 0.8
+		g = 0.8
+		b = 0.8
+	}
 
 	return r, g, b, dim(all)
 	/*
@@ -103,7 +109,7 @@ func colorForCell(cell agents.Cell) (float64, float64, float64, float64) {
 		}
 
 		r, g, b := dominant.GetColor()
-		return r, g, b, dominantCount*/
+		return r, g, b, dim(dominantCount) / 255*/
 }
 
-func dim(count int) float64 { return math.Min(255, float64(count)/400) }
+func dim(count int) float64 { return math.Min(255, float64(count)/80) }
