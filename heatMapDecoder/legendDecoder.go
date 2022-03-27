@@ -13,12 +13,12 @@ type LegendIndex struct {
 func ReadPredefined() []LegendIndex {
 	return []LegendIndex{
 		LegendIndex{Clr: color.RGBA{G: 255, B: 255, A: 255}},
-		LegendIndex{Clr: color.RGBA{R: 255, G: 255, B: 255, A: 255}, Multiplier: 4, Id: 1},
-		LegendIndex{Clr: color.RGBA{R: 255, B: 255, A: 255}, Multiplier: 6, Id: 2},
-		LegendIndex{Clr: color.RGBA{R: 255, A: 255}, Multiplier: 12, Id: 3},
-		LegendIndex{Clr: color.RGBA{R: 255, G: 255, A: 255}, Multiplier: 7, Id: 4},
-		LegendIndex{Clr: color.RGBA{B: 255, A: 255}, Multiplier: 20, Id: 5},
-		LegendIndex{Clr: color.RGBA{A: 255}, Multiplier: 80, Id: 6},
+		LegendIndex{Clr: color.RGBA{R: 255, G: 255, B: 255, A: 255}, Multiplier: 40, Id: 1},
+		LegendIndex{Clr: color.RGBA{R: 255, B: 255, A: 255}, Multiplier: 60, Id: 2},
+		LegendIndex{Clr: color.RGBA{R: 255, A: 255}, Multiplier: 120, Id: 3},
+		LegendIndex{Clr: color.RGBA{R: 255, G: 255, A: 255}, Multiplier: 70, Id: 4},
+		LegendIndex{Clr: color.RGBA{B: 255, A: 255}, Multiplier: 200, Id: 5},
+		LegendIndex{Clr: color.RGBA{A: 255}, Multiplier: 800, Id: 6},
 	}
 }
 
