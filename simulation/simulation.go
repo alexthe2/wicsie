@@ -47,6 +47,10 @@ func CreateSimulation(config Config) *Simulation {
 	return sim
 }
 
+func (sim *Simulation) GetAgents() []*agents.Agent {
+	return sim.agents
+}
+
 func (sim *Simulation) InitInfect(probability float64) {
 	for _, agent := range sim.agents {
 		if rand.Float64() < probability {
