@@ -43,8 +43,8 @@ func (movement *GridMovement) generateMovementBehaviour(agent Agent) {
 	xNeighbours := [8]int{0, 1, 1, 1, 0, -1, -1, -1}
 	yNeighbours := [8]int{1, 1, 0, -1, -1, -1, 0, 1}
 
-	//We are staying in the same cell (probability 70%)
-	if decisionProbability < 0.70 {
+	//We are staying in the same cell (probability 95%)
+	if decisionProbability < 0.95 {
 		movement.moveX = rand.Float64() - 0.5
 		movement.moveY = rand.Float64() - 0.5
 	} else {
