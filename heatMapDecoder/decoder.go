@@ -58,16 +58,13 @@ func Decode(file io.Reader) ([][]int, [][]int, map[int]color.Color, int, int) {
 					if knownColors[clr] == 0 {
 						counter++
 					}
-					//percentage := float64(counter) / float64(constants.KChunkSize*constants.KChunkSize)
-					//fmt.Println("i/constants.KChunkSize: ", i/constants.KChunkSize)
-					//fmt.Println("j/constants.KChunkSize: ", j/constants.KChunkSize)
-					if counter > 0 /*float64(percentage) > 0.1*/ {
-						heatChunkMap[i/constants.KChunkSize][j/constants.KChunkSize] = 1
-
-					} else {
-						heatChunkMap[i/constants.KChunkSize][j/constants.KChunkSize] = 0
-					}
 				}
+			}
+			percentage := float64(counter / (constants.KChunkSize * constants.KChunkSize))
+			if percentage > 0.2 {
+				heatChunkMap[i/constants.KChunkSize][j/constants.KChunkSize] = 1
+			} else {
+				heatChunkMap[i/constants.KChunkSize][j/constants.KChunkSize] = 0
 			}
 		}
 	}

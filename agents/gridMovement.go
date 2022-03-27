@@ -59,12 +59,14 @@ func (movement *GridMovement) generateMovementBehaviour(agent Agent) {
 					score := 0
 					if movement.heatChunkMap[xChunkAgent+i][yChunkAgent+j] == 1 {
 						score = -100
+						//fmt.Println("score: ", score)
+						//fmt.Println("maxScore: ", maxScore)
 					} else {
 						score = chunk.Healthy + chunk.Cured - chunk.Infected
 					}
-
 					if score > maxScore {
 						maxScore = score
+						//fmt.Println("newScore: ", score)
 						iBest = i
 						jBest = j
 					}
