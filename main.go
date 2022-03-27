@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/fogleman/gg"
 	"image"
 	"image/png"
+	"log"
 	"math/rand"
 	"time"
 	"wicsie/agents"
@@ -17,7 +19,12 @@ func main() {
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
 	rand.Seed(time.Now().UnixNano())
 
-	heatMap, colorMap, width, height := heatMapDecoder.LoadAndDecode("population.png")
+	heatMap, heatChunkMap, colorMap, width, height := heatMapDecoder.LoadAndDecode("population.png")
+	mask, err := gg.LoadImage("europe.png")
+	if err != nil {
+		log.Fatalf("Could not load mask: %v", err)
+	}
+
 	fmt.Printf("%v\n", colorMap)
 	legend := heatMapDecoder.ReadPredefined()
 
@@ -26,8 +33,10 @@ func main() {
 
 	const steps = 1000
 
+	grid := agents.CreateGridMap(width, height, 3)
+
 	createMovement := func() agents.Movement {
-		return agents.CreateRandomMovement(10)
+		return agents.CreateGridMovement(100, grid, heatChunkMap)
 	}
 
 	simu := simulation.CreateSimulation(simulation.Config{
@@ -35,18 +44,23 @@ func main() {
 		Width:     float64(width),
 		Height:    float64(height),
 		Movement:  createMovement,
-		Spreading: agents.CreateOnTouchSpreading(),
+		Spreading: agents.CreateGridSpread(grid),
 
 		HeatMap:     heatMap,
 		LegendIndex: legend,
 	})
 
-	simu.InitInfect(0.01)
-	board := drawing.CreateBoard(width, height)
+	simu.InitInfect(0.0001)
+	board := drawing.CreateBoard(width, height, mask, 1)
+
 	for i := 0; i < steps; i++ {
+		grid.UpdateGridMap(simu.GetAgents())
+		board.DrawGridMap(*grid)
+		board.SaveBoard(fmt.Sprintf("out%s/boardgrid%d.png", *appendix, i))
+
 		simu.Step()
-		simu.DrawToBoard(board)
-		board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
+		//simu.DrawToBoard(board)
+		//board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
 	}
 
 }
