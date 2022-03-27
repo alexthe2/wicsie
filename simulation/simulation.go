@@ -2,9 +2,11 @@ package simulation
 
 import (
 	"log"
+	"math"
 	"math/rand"
 	"wicsie/agents"
 	"wicsie/drawing"
+	"wicsie/heatMapDecoder"
 )
 
 type Simulation struct {
@@ -14,14 +16,32 @@ type Simulation struct {
 	spreading agents.Change
 }
 
-func CreateSimulation(amount int, width int, height int, movement func() agents.Movement, spreading agents.Change) *Simulation {
+type Config struct {
+	Weight        float64
+	Width, Height float64
+	Movement      func() agents.Movement
+	Spreading     agents.Change
+
+	HeatMap     [][]int
+	LegendIndex []heatMapDecoder.LegendIndex
+}
+
+func CreateSimulation(config Config) *Simulation {
 	sim := new(Simulation)
 	sim.step = 0
-	sim.spreading = spreading
 
-	sim.agents = make([]*agents.Agent, amount)
-	for i := 0; i < amount; i++ {
-		sim.agents[i] = agents.CreateAgentAtRandomPosition(float64(width), float64(height), movement())
+	sim.spreading = config.Spreading
+	sim.agents = make([]*agents.Agent, 0)
+
+	for y := 0.0; y < config.Height; y += 1 {
+		for x := 0.0; x < config.Width; x += 1 {
+			n := int(config.Weight * float64(heatMapDecoder.GetMultiplier(config.LegendIndex, config.HeatMap[int(y)][int(x)])))
+			for i := 0; i < n; i++ {
+				if rand.Float64() < 0.5 {
+					sim.agents = append(sim.agents, agents.CreateAgent(x+rV(), y+rV(), config.Width, config.Height, config.Movement()))
+				}
+			}
+		}
 	}
 
 	return sim
@@ -53,4 +73,20 @@ func (sim *Simulation) Step() {
 
 func (sim *Simulation) DrawToBoard(board *drawing.Board) {
 	board.DrawAgents(sim.agents)
+}
+
+func (sim *Simulation) GetAgents() []*agents.Agent {
+	return sim.agents
+}
+
+func rV() float64 {
+	return rand.Float64()*2 - 1
+}
+
+func (sim *Simulation) InfectAtPosition(x, y, prop float64) {
+	for _, agent := range sim.agents {
+		if math.Abs(agent.X-x) < 1 && math.Abs(agent.Y-y) < 1 {
+			sim.spreading.Infect(agent)
+		}
+	}
 }

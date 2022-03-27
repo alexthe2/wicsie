@@ -3,36 +3,66 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/fogleman/gg"
+	"image"
+	"image/png"
+	"log"
 	"math/rand"
 	"time"
-	agents2 "wicsie/agents"
+	"wicsie/agents"
+	"wicsie/constants"
 	"wicsie/drawing"
+	"wicsie/heatMapDecoder"
 	"wicsie/simulation"
 )
 
 func main() {
+	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
+	rand.Seed(time.Now().UnixNano())
+
+	heatMap, _, colorMap, width, height := heatMapDecoder.LoadAndDecode("population.png")
+	mask, err := gg.LoadImage("europe.png")
+	if err != nil {
+		log.Fatalf("Could not load mask: %v", err)
+	}
+
+	fmt.Printf("%v\n", colorMap)
+	legend := heatMapDecoder.ReadPredefined()
+
 	appendix := flag.String("appendix", "", "the appendix in which the pictures should be saved, outAppendix")
 	flag.Parse()
 
-	rand.Seed(time.Now().UnixNano())
+	const steps = 1000
 
-	width := 2000
-	height := 1100
+	grid := agents.CreateGridMap(width, height, constants.KChunkSize)
 
-	const agents = 2000
-	const steps = 2000
-
-	createMovement := func() agents2.Movement {
-		return agents2.CreateRandomMovement(300)
+	createMovement := func() agents.Movement {
+		return agents.CreateRandomMovement(60, heatMap, float64(width), float64(height)) //CreateSmartGridMovement(heatChunkMap) //CreateGridMovement(100, grid, heatChunkMap)
 	}
 
-	simu := simulation.CreateSimulation(agents, width, height, createMovement, agents2.CreateOnTouchSpreading())
-	simu.InitInfect(0.01)
-	board := drawing.CreateBoard(width, height)
+	simu := simulation.CreateSimulation(simulation.Config{
+		Weight:    0.1,
+		Width:     float64(width),
+		Height:    float64(height),
+		Movement:  createMovement,
+		Spreading: agents.CreateGridSpread(grid),
+
+		HeatMap:     heatMap,
+		LegendIndex: legend,
+	})
+
+	//simu.InitInfect(0.001)
+	simu.InfectAtPosition(100, 100, 0.5)
+	board := drawing.CreateBoard(width, height, mask, 1)
 
 	for i := 0; i < steps; i++ {
+		grid.UpdateGridMap(simu.GetAgents())
+		board.DrawGridMap(*grid)
+		board.SaveBoard(fmt.Sprintf("out%s/boardgrid%d.png", *appendix, i))
+
 		simu.Step()
-		simu.DrawToBoard(board)
-		board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
+		//simu.DrawToBoard(board)
+		//board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
 	}
+
 }
