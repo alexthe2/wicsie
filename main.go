@@ -60,8 +60,8 @@ func main() {
 		board.SaveBoard(fmt.Sprintf("out%s/boardgrid%d.png", *appendix, i))
 
 		simu.Step()
-		//simu.DrawToBoard(board)
-		//board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
+		simu.DrawToBoard(board)
+		board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
 	}
 
 }
