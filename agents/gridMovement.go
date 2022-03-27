@@ -54,7 +54,7 @@ func (movement *GridMovement) generateMovementBehaviour(agent Agent) {
 		jBest := 0
 		for _, i := range xNeighbours {
 			for _, j := range yNeighbours {
-				if xChunkAgent+i > 0 && yChunkAgent+j > 0 /* && xChunkAgent+i < width && yChunkAgent+j < height */ {
+				if xChunkAgent+i > 0 && yChunkAgent+j > 0 { //} && xChunkAgent+i < width && yChunkAgent+j < height {
 					chunk := movement.grid.Cells[xChunkAgent+i][yChunkAgent+j]
 					score := 0
 					if movement.heatChunkMap[xChunkAgent+i][yChunkAgent+j] == 1 {

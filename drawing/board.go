@@ -61,7 +61,7 @@ func (board *Board) DrawGridMap(gridMap agents.GridMap) {
 					board.ctx.SetPixel(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j)
 
 					if board.mask.At(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j).(color.NRGBA).A == 0 {
-						board.ctx.SetRGBA(0, 0, 0, 0)
+						board.ctx.SetRGBA(.6784, .847, .901, .8)
 					} else {
 						board.ctx.SetRGBA(r, g, b, dim(count))
 					}
@@ -77,14 +77,14 @@ func colorForCell(cell agents.Cell) (float64, float64, float64, int) {
 	dominant := agents.Healthy
 	dominantCount := cell.Healthy
 
-	if cell.Infected > dominantCount {
-		dominant = agents.Infected
-		dominantCount = cell.Infected
-	}
-
 	if cell.Cured > dominantCount {
 		dominant = agents.Cured
 		dominantCount = cell.Cured
+	}
+
+	if cell.Infected*3 > dominantCount {
+		dominant = agents.Infected
+		dominantCount = cell.Infected
 	}
 
 	if dominantCount == 0 {
@@ -95,4 +95,4 @@ func colorForCell(cell agents.Cell) (float64, float64, float64, int) {
 	return r, g, b, dominantCount
 }
 
-func dim(count int) float64 { return math.Min(255, float64(count)/20) }
+func dim(count int) float64 { return math.Min(255, float64(count)/400) }

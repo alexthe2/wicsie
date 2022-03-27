@@ -1,3 +1,3 @@
 package constants
 
-const KChunkSize = 5
+const KChunkSize = 3

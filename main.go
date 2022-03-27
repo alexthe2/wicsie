@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"time"
 	"wicsie/agents"
+	"wicsie/constants"
 	"wicsie/drawing"
 	"wicsie/heatMapDecoder"
 	"wicsie/simulation"
@@ -33,14 +34,14 @@ func main() {
 
 	const steps = 1000
 
-	grid := agents.CreateGridMap(width, height, 3)
+	grid := agents.CreateGridMap(width, height, constants.KChunkSize)
 
 	createMovement := func() agents.Movement {
-		return agents.CreateGridMovement(100, grid, heatChunkMap)
+		return agents.CreateGridMovement(50, grid, heatChunkMap)
 	}
 
 	simu := simulation.CreateSimulation(simulation.Config{
-		Weight:    .2,
+		Weight:    1,
 		Width:     float64(width),
 		Height:    float64(height),
 		Movement:  createMovement,
@@ -50,7 +51,7 @@ func main() {
 		LegendIndex: legend,
 	})
 
-	simu.InitInfect(0.01)
+	simu.InitInfect(0.001)
 	board := drawing.CreateBoard(width, height, mask, 1)
 
 	for i := 0; i < steps; i++ {
@@ -59,8 +60,8 @@ func main() {
 		board.SaveBoard(fmt.Sprintf("out%s/boardgrid%d.png", *appendix, i))
 
 		simu.Step()
-		simu.DrawToBoard(board)
-		board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
+		//simu.DrawToBoard(board)
+		//board.SaveBoard(fmt.Sprintf("out%s/board%d.png", *appendix, i))
 	}
 
 }
