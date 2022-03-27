@@ -54,7 +54,7 @@ func (board *Board) drawAgent(agent *agents.Agent) {
 func (board *Board) DrawGridMap(gridMap agents.GridMap) {
 	for x := 0; x < gridMap.CountX; x++ {
 		for y := 0; y < gridMap.CountY; y++ {
-			r, g, b, count := colorForCell(gridMap.GetCell(x, y))
+			r, g, b, a := colorForCell(gridMap.GetCell(x, y))
 
 			for i := 0; i < gridMap.ChunkSize; i++ {
 				for j := 0; j < gridMap.ChunkSize; j++ {
@@ -63,7 +63,7 @@ func (board *Board) DrawGridMap(gridMap agents.GridMap) {
 					if board.mask.At(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j).(color.NRGBA).A == 0 {
 						board.ctx.SetRGBA(.6784, .847, .901, .8)
 					} else {
-						board.ctx.SetRGBA(r, g, b, dim(count))
+						board.ctx.SetRGBA(r, g, b, a)
 					}
 
 					board.ctx.Fill()
@@ -73,7 +73,18 @@ func (board *Board) DrawGridMap(gridMap agents.GridMap) {
 	}
 }
 
-func colorForCell(cell agents.Cell) (float64, float64, float64, int) {
+func colorForCell(cell agents.Cell) (float64, float64, float64, float64) {
+	/*all := cell.Healthy + cell.Infected + cell.Cured
+	infectedPart := float64(cell.Infected) / float64(all)
+	healthyPart := float64(cell.Healthy) / float64(all)
+	curedPart := float64(cell.Cured) / float64(all)
+
+	r := math.Max(infectedPart*255-(curedPart*0.8*255), 20)
+	g := math.Max(healthyPart*255-(curedPart*0.8*255), 20)
+	b := curedPart * 0.2 * 255
+
+	return r / 255.0, g / 255.0, b / 255.0, dim(all)*/
+
 	dominant := agents.Healthy
 	dominantCount := cell.Healthy
 
@@ -82,7 +93,7 @@ func colorForCell(cell agents.Cell) (float64, float64, float64, int) {
 		dominantCount = cell.Cured
 	}
 
-	if cell.Infected*3 > dominantCount {
+	if cell.Infected > dominantCount {
 		dominant = agents.Infected
 		dominantCount = cell.Infected
 	}
@@ -92,7 +103,8 @@ func colorForCell(cell agents.Cell) (float64, float64, float64, int) {
 	}
 
 	r, g, b := dominant.GetColor()
-	return r, g, b, dominantCount
+	return r, g, b, dim(cell.Healthy + cell.Infected + cell.Cured)
+
 }
 
 func dim(count int) float64 { return math.Min(255, float64(count)/800) }
