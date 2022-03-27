@@ -56,11 +56,9 @@ func (gridMap *GridMap) recalculateGridMap(agents []*Agent) {
 		corY := int(agent.Y / float64(gridMap.ChunkSize))
 		gridMap.Cells[corX][corY].Agents = append(gridMap.Cells[corX][corY].Agents, agent)
 		switch agent.Health {
-		case Incubated:
-		case Healthy:
+		case Incubated, Healthy:
 			gridMap.Cells[corX][corY].Healthy++
-		case Infected:
-		case UnknownInfected:
+		case Infected, UnknownInfected:
 			gridMap.Cells[corX][corY].Infected++
 		case Cured:
 			gridMap.Cells[corX][corY].Cured++
@@ -70,4 +68,8 @@ func (gridMap *GridMap) recalculateGridMap(agents []*Agent) {
 
 func (gridMap *GridMap) GetCell(x, y int) Cell {
 	return gridMap.Cells[x][y]
+}
+
+func (gridMap *GridMap) GetNeighbours(agent *Agent) []*Agent {
+	return gridMap.Cells[int(agent.X/float64(gridMap.ChunkSize))][int(agent.Y/float64(gridMap.ChunkSize))].Agents
 }

@@ -82,7 +82,7 @@ func colorForCell(cell agents.Cell) (float64, float64, float64, int) {
 		dominantCount = cell.Cured
 	}
 
-	if cell.Infected*3 > dominantCount {
+	if cell.Infected*10 > dominantCount {
 		dominant = agents.Infected
 		dominantCount = cell.Infected
 	}
