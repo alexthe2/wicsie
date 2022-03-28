@@ -4,6 +4,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"sync"
 	"wicsie/agents"
 	"wicsie/drawing"
 	"wicsie/heatMapDecoder"
@@ -61,9 +62,15 @@ func (sim *Simulation) Step() {
 		agentCopy[i] = *sim.agents[i]
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(len(sim.agents))
 	for i := 0; i < len(sim.agents); i++ {
-		sim.agents[i].Move(agentCopy)
+		go func(i int) {
+			sim.agents[i].Move(agentCopy)
+			wg.Done()
+		}(i)
 	}
+	wg.Wait()
 
 	sim.spreading.ModifyHealth(sim.agents)
 

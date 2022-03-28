@@ -1,0 +1,6 @@
+populationMap: "population.png"
+maskMap: "europe.png"
+behaviour: "example.behaviour"
+
+steps: 5000
+weight: 0.1

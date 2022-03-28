@@ -2,6 +2,7 @@ package agents
 
 import (
 	"math/rand"
+	"sync"
 	"wicsie/constants"
 )
 
@@ -37,6 +38,20 @@ func (gs *GridSpread) Infect(agent *Agent) {
 		nextHealth:         Incubated,
 		timeUntilNextState: calculateTime(constants.KBaseTimeUntilIncubation, constants.KVarianceInTimeUntilIncubation),
 	}
+}
+
+func (gs *GridSpread) parallelInfect(agent *Agent, mutex *sync.Mutex) {
+	mutex.Lock()
+	if _, exists := gs.tracked[agent]; exists {
+		mutex.Unlock()
+		return
+	}
+
+	gs.tracked[agent] = nextStage{
+		nextHealth:         Incubated,
+		timeUntilNextState: calculateTime(constants.KBaseTimeUntilIncubation, constants.KVarianceInTimeUntilIncubation),
+	}
+	mutex.Unlock()
 }
 
 func (gs *GridSpread) handleTracked() {
@@ -75,13 +90,22 @@ func (gs *GridSpread) moveHealth(agent *Agent) {
 }
 
 func (gs *GridSpread) handleNew(agents []*Agent) {
+	var mutex sync.Mutex
+
 	for _, agent := range agents {
 		if agent.Health == Infected || agent.Health == UnknownInfected {
-			for _, partner := range gs.gridMap.GetNeighbours(agent) {
-				if partner.Health == Healthy && rand.Float64() < constants.KProbabilityOfInfection {
-					gs.Infect(partner)
-				}
+			var wg sync.WaitGroup
+			neighbours := gs.gridMap.GetNeighbours(agent)
+			wg.Add(len(neighbours))
+			for _, partner := range neighbours {
+				go func(partner *Agent) {
+					if partner.Health == Healthy && rand.Float64() < constants.KProbabilityOfInfection {
+						gs.parallelInfect(partner, &mutex)
+					}
+					wg.Done()
+				}(partner)
 			}
+			wg.Wait()
 		}
 	}
 }

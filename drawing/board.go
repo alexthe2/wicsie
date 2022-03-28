@@ -75,9 +75,9 @@ func (board *Board) DrawGridMap(gridMap agents.GridMap) {
 
 func colorForCell(cell agents.Cell) (float64, float64, float64, float64) {
 	all := cell.Healthy + cell.Infected + cell.Cured
-	healthy := float64(cell.Healthy) / float64(all)
-	infected := float64(cell.Infected) / float64(all)
-	cured := float64(cell.Cured) / float64(all)
+	healthy := float64(cell.Healthy) / math.Max(float64(all), 1.0)
+	infected := float64(cell.Infected) / math.Max(float64(all), 1.0)
+	cured := float64(cell.Cured) / math.Max(float64(all), 1.0)
 
 	r := 0.05 + 0.95*infected
 	g := 0.05 + 0.95*healthy

@@ -70,6 +70,12 @@ func (gridMap *GridMap) GetCell(x, y int) Cell {
 	return gridMap.Cells[x][y]
 }
 
+func (gridMap *GridMap) GetCellForAgent(agent Agent) Cell {
+	corX := int(agent.X / float64(gridMap.ChunkSize))
+	corY := int(agent.Y / float64(gridMap.ChunkSize))
+	return gridMap.Cells[corX][corY]
+}
+
 func (gridMap *GridMap) GetNeighbours(agent *Agent) []*Agent {
 	return gridMap.Cells[int(agent.X/float64(gridMap.ChunkSize))][int(agent.Y/float64(gridMap.ChunkSize))].Agents
 }

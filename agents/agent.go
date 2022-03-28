@@ -7,6 +7,7 @@ import (
 
 type Agent struct {
 	X, Y          float64
+	homeX, homeY  float64
 	width, height float64
 
 	Health   Status
@@ -17,6 +18,8 @@ func CreateAgent(x, y, width, height float64, movement Movement) *Agent {
 	return &Agent{
 		X:        x,
 		Y:        y,
+		homeX:    x,
+		homeY:    y,
 		width:    width,
 		height:   height,
 		Health:   Healthy,
@@ -37,6 +40,11 @@ func CreateAgentAtRandomPosition(width, height float64, movement Movement) *Agen
 
 func (agent *Agent) Move(agents []Agent) {
 	dx, dy := agent.Movement.Move(agents, *agent)
+	if dx == 0 && dy == 0 {
+		agent.X = agent.homeX
+		agent.Y = agent.homeY
+		return
+	}
 	agent.X = math.Mod(agent.X+dx, agent.width)
 	agent.Y = math.Mod(agent.Y+dy, agent.height)
 
