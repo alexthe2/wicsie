@@ -44,7 +44,7 @@ func (movement *GridMovement) generateMovementBehaviour(agent Agent) {
 	yNeighbours := [8]int{1, 1, 0, -1, -1, -1, 0, 1}
 
 	//We are staying in the same cell (probability 70%)
-	if decisionProbability < 0.70 {
+	if decisionProbability < 0.60 {
 		movement.moveX = rand.Float64() - 0.5
 		movement.moveY = rand.Float64() - 0.5
 	} else {
@@ -54,19 +54,16 @@ func (movement *GridMovement) generateMovementBehaviour(agent Agent) {
 		jBest := 0
 		for _, i := range xNeighbours {
 			for _, j := range yNeighbours {
-				if xChunkAgent+i > 0 && yChunkAgent+j > 0 /* && xChunkAgent+i < width && yChunkAgent+j < height */ {
+				score := 0
+				if xChunkAgent+i > 0 && yChunkAgent+j > 0 && xChunkAgent+i < len(movement.grid.Cells) && yChunkAgent+j < len(movement.grid.Cells[1]) {
 					chunk := movement.grid.Cells[xChunkAgent+i][yChunkAgent+j]
-					score := 0
 					if movement.heatChunkMap[xChunkAgent+i][yChunkAgent+j] == 1 {
 						score = -100
-						//fmt.Println("score: ", score)
-						//fmt.Println("maxScore: ", maxScore)
 					} else {
 						score = chunk.Healthy + chunk.Cured - chunk.Infected
 					}
-					if score > maxScore {
+					if score >= maxScore {
 						maxScore = score
-						//fmt.Println("newScore: ", score)
 						iBest = i
 						jBest = j
 					}

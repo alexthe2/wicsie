@@ -54,16 +54,16 @@ func (board *Board) drawAgent(agent *agents.Agent) {
 func (board *Board) DrawGridMap(gridMap agents.GridMap) {
 	for x := 0; x < gridMap.CountX; x++ {
 		for y := 0; y < gridMap.CountY; y++ {
-			r, g, b, count := colorForCell(gridMap.GetCell(x, y))
+			r, g, b, a := colorForCell(gridMap.GetCell(x, y))
 
 			for i := 0; i < gridMap.ChunkSize; i++ {
 				for j := 0; j < gridMap.ChunkSize; j++ {
 					board.ctx.SetPixel(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j)
 
 					if board.mask.At(x*gridMap.ChunkSize+i, y*gridMap.ChunkSize+j).(color.NRGBA).A == 0 {
-						board.ctx.SetRGBA(0, 0, 0, 0)
+						board.ctx.SetRGBA(.6784, .847, .901, .8)
 					} else {
-						board.ctx.SetRGBA(r, g, b, dim(count))
+						board.ctx.SetRGBA(r, g, b, a)
 					}
 
 					board.ctx.Fill()
@@ -73,26 +73,43 @@ func (board *Board) DrawGridMap(gridMap agents.GridMap) {
 	}
 }
 
-func colorForCell(cell agents.Cell) (float64, float64, float64, int) {
-	dominant := agents.Healthy
-	dominantCount := cell.Healthy
+func colorForCell(cell agents.Cell) (float64, float64, float64, float64) {
+	all := cell.Healthy + cell.Infected + cell.Cured
+	healthy := float64(cell.Healthy) / float64(all)
+	infected := float64(cell.Infected) / float64(all)
+	cured := float64(cell.Cured) / float64(all)
 
-	if cell.Infected > dominantCount {
-		dominant = agents.Infected
-		dominantCount = cell.Infected
+	r := 0.05 + 0.95*infected
+	g := 0.05 + 0.95*healthy
+	b := 0.0
+
+	if cured > healthy+infected {
+		r = 0.8
+		g = 0.8
+		b = 0.8
 	}
 
-	if cell.Cured > dominantCount {
-		dominant = agents.Cured
-		dominantCount = cell.Cured
-	}
+	return r, g, b, dim(all)
+	/*
+		dominant := agents.Healthy
+		dominantCount := cell.Healthy
 
-	if dominantCount == 0 {
-		return 0, 0, 0, 0
-	}
+		if cell.Cured > dominantCount {
+			dominant = agents.Cured
+			dominantCount = cell.Cured
+		}
 
-	r, g, b := dominant.GetColor()
-	return r, g, b, dominantCount
+		if cell.Infected*10 > dominantCount {
+			dominant = agents.Infected
+			dominantCount = cell.Infected
+		}
+
+		if dominantCount == 0 {
+			return 0, 0, 0, 0
+		}
+
+		r, g, b := dominant.GetColor()
+		return r, g, b, dim(dominantCount) / 255*/
 }
 
-func dim(count int) float64 { return math.Min(255, float64(count)/20) }
+func dim(count int) float64 { return math.Min(255, float64(count)/80) }

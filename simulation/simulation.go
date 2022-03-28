@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"log"
+	"math"
 	"math/rand"
 	"wicsie/agents"
 	"wicsie/drawing"
@@ -80,4 +81,12 @@ func (sim *Simulation) GetAgents() []*agents.Agent {
 
 func rV() float64 {
 	return rand.Float64()*2 - 1
+}
+
+func (sim *Simulation) InfectAtPosition(x, y, prop float64) {
+	for _, agent := range sim.agents {
+		if math.Abs(agent.X-x) < 1 && math.Abs(agent.Y-y) < 1 {
+			sim.spreading.Infect(agent)
+		}
+	}
 }
