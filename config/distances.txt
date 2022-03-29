@@ -1,0 +1,2 @@
+longitudinal: 26oo
+latitudinal: 2400
