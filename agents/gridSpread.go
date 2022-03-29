@@ -1,26 +1,29 @@
 package agents
 
 import (
+	"log"
 	"math/rand"
-	"sync"
+	"os"
 	"wicsie/constants"
 )
 
-type nextStage struct {
-	nextHealth         Status
-	timeUntilNextState int
+type NextStage struct {
+	NextHealth         Status
+	TimeUntilNextState int
 }
 
 type GridSpread struct {
-	tracked map[*Agent]nextStage
+	tracked map[*Agent]NextStage
 
 	gridMap *GridMap
+	LOGGER  *log.Logger
 }
 
 func CreateGridSpread(gridMap *GridMap) *GridSpread {
 	return &GridSpread{
-		tracked: make(map[*Agent]nextStage),
+		tracked: make(map[*Agent]NextStage),
 		gridMap: gridMap,
+		LOGGER:  log.New(os.Stdout, "[GRSPR] ", log.Ltime),
 	}
 }
 
@@ -34,24 +37,10 @@ func (gs *GridSpread) Infect(agent *Agent) {
 		return
 	}
 
-	gs.tracked[agent] = nextStage{
-		nextHealth:         Incubated,
-		timeUntilNextState: calculateTime(constants.KBaseTimeUntilIncubation, constants.KVarianceInTimeUntilIncubation),
+	gs.tracked[agent] = NextStage{
+		NextHealth:         Incubated,
+		TimeUntilNextState: calculateTime(constants.KBaseTimeUntilIncubation, constants.KVarianceInTimeUntilIncubation),
 	}
-}
-
-func (gs *GridSpread) parallelInfect(agent *Agent, mutex *sync.Mutex) {
-	mutex.Lock()
-	if _, exists := gs.tracked[agent]; exists {
-		mutex.Unlock()
-		return
-	}
-
-	gs.tracked[agent] = nextStage{
-		nextHealth:         Incubated,
-		timeUntilNextState: calculateTime(constants.KBaseTimeUntilIncubation, constants.KVarianceInTimeUntilIncubation),
-	}
-	mutex.Unlock()
 }
 
 func (gs *GridSpread) handleTracked() {
@@ -63,21 +52,21 @@ func (gs *GridSpread) handleTracked() {
 func (gs *GridSpread) moveHealth(agent *Agent) {
 	track := gs.tracked[agent]
 
-	track.timeUntilNextState--
-	if track.timeUntilNextState <= 0 {
-		agent.Health = track.nextHealth
-		switch track.nextHealth {
+	track.TimeUntilNextState--
+	if track.TimeUntilNextState <= 0 {
+		agent.Health = track.NextHealth
+		switch track.NextHealth {
 		case Incubated:
-			track.nextHealth = Infected
-			track.timeUntilNextState = calculateTime(constants.KBaseTimeUntilInfection, constants.KVarianceInTimeUntilInfection)
+			track.NextHealth = Infected
+			track.TimeUntilNextState = calculateTime(constants.KBaseTimeUntilInfection, constants.KVarianceInTimeUntilInfection)
 
 		case Infected, UnknownInfected:
-			track.nextHealth = Cured
-			track.timeUntilNextState = calculateTime(constants.KBaseTimeUntilRecovery, constants.KVarianceInTimeUntilRecovery)
+			track.NextHealth = Cured
+			track.TimeUntilNextState = calculateTime(constants.KBaseTimeUntilRecovery, constants.KVarianceInTimeUntilRecovery)
 
 		case Cured:
-			track.nextHealth = Healthy
-			track.timeUntilNextState = calculateTime(constants.KBaseTimeUntilProtectionAfterCovidOver, constants.KVarianceInTimeUntilProtectionAfterCovidOver)
+			track.NextHealth = Healthy
+			track.TimeUntilNextState = calculateTime(constants.KBaseTimeUntilProtectionAfterCovidOver, constants.KVarianceInTimeUntilProtectionAfterCovidOver)
 
 		case Healthy:
 			delete(gs.tracked, agent)
@@ -90,22 +79,14 @@ func (gs *GridSpread) moveHealth(agent *Agent) {
 }
 
 func (gs *GridSpread) handleNew(agents []*Agent) {
-	var mutex sync.Mutex
-
 	for _, agent := range agents {
 		if agent.Health == Infected || agent.Health == UnknownInfected {
-			var wg sync.WaitGroup
 			neighbours := gs.gridMap.GetNeighbours(agent)
-			wg.Add(len(neighbours))
 			for _, partner := range neighbours {
-				go func(partner *Agent) {
-					if partner.Health == Healthy && rand.Float64() < constants.KProbabilityOfInfection {
-						gs.parallelInfect(partner, &mutex)
-					}
-					wg.Done()
-				}(partner)
+				if partner.Health == Healthy && rand.Float64() < constants.KProbabilityOfInfection {
+					gs.Infect(partner)
+				}
 			}
-			wg.Wait()
 		}
 	}
 }

@@ -1,3 +1,5 @@
+github.com/enriquebris/goconcurrentqueue v0.6.3 h1:+ma7EEEFMDmJBIS6Q4KNJruChctgwYQFqlxdveIoEE4=
+github.com/enriquebris/goconcurrentqueue v0.6.3/go.mod h1:OZ+KC2BcRYzjg0vgoUs1GFqdAjkD9mz2Ots7Jbm1yS4=
 github.com/fogleman/gg v1.3.0 h1:/7zJX8F6AaYQc57WQCyN9cAIz+4bCJGO9B+dyW29am8=
 github.com/fogleman/gg v1.3.0/go.mod h1:R/bRT+9gY/C5z7JzPU0zXsXHKM4/ayA+zqcVNZzPa1k=
 github.com/go-yaml/yaml v2.1.0+incompatible h1:RYi2hDdss1u4YE7GwixGzWwVo47T8UQwnTLB6vQiq+o=

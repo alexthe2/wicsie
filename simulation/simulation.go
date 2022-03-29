@@ -4,6 +4,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"os"
 	"sync"
 	"wicsie/agents"
 	"wicsie/drawing"
@@ -15,6 +16,7 @@ type Simulation struct {
 	agents []*agents.Agent
 
 	spreading agents.Change
+	LOGGER    *log.Logger
 }
 
 type Config struct {
@@ -29,6 +31,7 @@ type Config struct {
 
 func CreateSimulation(config Config) *Simulation {
 	sim := new(Simulation)
+	sim.LOGGER = log.New(os.Stdout, "[SIMU] ", log.Ltime)
 	sim.step = 0
 
 	sim.spreading = config.Spreading
@@ -57,11 +60,13 @@ func (sim *Simulation) InitInfect(probability float64) {
 }
 
 func (sim *Simulation) Step() {
+	sim.LOGGER.Printf("Starting simulation for step %d", sim.step)
 	agentCopy := make([]agents.Agent, len(sim.agents))
 	for i := 0; i < len(sim.agents); i++ {
 		agentCopy[i] = *sim.agents[i]
 	}
 
+	sim.LOGGER.Printf("Starting walking for step %d", sim.step)
 	var wg sync.WaitGroup
 	wg.Add(len(sim.agents))
 	for i := 0; i < len(sim.agents); i++ {
@@ -71,10 +76,13 @@ func (sim *Simulation) Step() {
 		}(i)
 	}
 	wg.Wait()
+	sim.LOGGER.Printf("Finished walking for step %d", sim.step)
 
+	sim.LOGGER.Printf("Starting spreading for step %d", sim.step)
 	sim.spreading.ModifyHealth(sim.agents)
+	sim.LOGGER.Printf("Finished spreading for step %d", sim.step)
 
-	log.Printf("Finished step %d", sim.step)
+	sim.LOGGER.Printf("Finished simulation for step %d", sim.step)
 	sim.step++
 }
 
@@ -92,7 +100,7 @@ func rV() float64 {
 
 func (sim *Simulation) InfectAtPosition(x, y, prop float64) {
 	for _, agent := range sim.agents {
-		if math.Abs(agent.X-x) < 1 && math.Abs(agent.Y-y) < 1 {
+		if math.Abs(agent.X-x) < 1 && math.Abs(agent.Y-y) < 1 && prop > rand.Float64() {
 			sim.spreading.Infect(agent)
 		}
 	}
