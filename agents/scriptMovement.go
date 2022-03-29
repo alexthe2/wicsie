@@ -96,22 +96,24 @@ func (movement *ScriptMovement) Move(agentsAround []Agent, me Agent) (float64, f
 	covidPercentage := float64(cell.Cured+cell.Infected+cell.Healthy) / math.Max(float64(cell.Infected), 1)
 	for _, behaviour := range movement.behaviours {
 		if behaviour.Min <= covidPercentage && covidPercentage <= behaviour.Max {
-			if randFloat() < behaviour.ChanceForSmallMove {
-				movement.currentMove.x = randFloat()*behaviour.MaximalSmallMove*2 - behaviour.MaximalSmallMove
-				movement.currentMove.y = randFloat()*behaviour.MaximalSmallMove*2 - behaviour.MaximalSmallMove
-				movement.currentMove.timeLeft = behaviour.MaximalSmallMoveTime/2 + rand.Intn(behaviour.MaximalSmallMoveTime)/2
+			if randFloat() < behaviour.ChanceForExtremeMove {
+				movement.currentMove.x = randFloat()*504 - me.X
+				movement.currentMove.y = randFloat()*599 - me.Y
+				movement.currentMove.timeLeft = 0
+			} else if randFloat() < behaviour.ChanceForReturningHome {
+				movement.currentMove.x = 0
+				movement.currentMove.y = 0
+				movement.currentMove.timeLeft = 0
 				return movement.currentMove.x, movement.currentMove.y
-			}
-			if randFloat() < behaviour.ChanceForBigMove {
+			} else if randFloat() < behaviour.ChanceForBigMove {
 				movement.currentMove.x = randFloat()*behaviour.MaximalBigMove*2 - behaviour.MaximalBigMove
 				movement.currentMove.y = randFloat()*behaviour.MaximalBigMove*2 - behaviour.MaximalBigMove
 				movement.currentMove.timeLeft = behaviour.MaximalBigMoveTime/2 + rand.Intn(behaviour.MaximalBigMoveTime)/2
 				return movement.currentMove.x, movement.currentMove.y
-			}
-			if randFloat() < behaviour.ChanceForReturningHome {
-				movement.currentMove.x = 0
-				movement.currentMove.y = 0
-				movement.currentMove.timeLeft = 0
+			} else if randFloat() < behaviour.ChanceForSmallMove {
+				movement.currentMove.x = randFloat()*behaviour.MaximalSmallMove*2 - behaviour.MaximalSmallMove
+				movement.currentMove.y = randFloat()*behaviour.MaximalSmallMove*2 - behaviour.MaximalSmallMove
+				movement.currentMove.timeLeft = behaviour.MaximalSmallMoveTime/2 + rand.Intn(behaviour.MaximalSmallMoveTime)/2
 				return movement.currentMove.x, movement.currentMove.y
 			}
 		}
