@@ -13,16 +13,14 @@ type Behaviour struct {
 	AreaXStart, AreaXEnd, AreaYStart, AreaYEnd int
 
 	Min, Max             float64
-	ChanceForSmallMove   float64
-	MaximalSmallMove     float64
-	MaximalSmallMoveTime int
-
-	ChanceForBigMove   float64
-	MaximalBigMove     float64
-	MaximalBigMoveTime int
+	Alpha								 float64
+	DistFact   					 float64
+	Beta                 float64
+	TimeFact             float64
 
 	ChanceForReturningHome float64
 	ChanceForExtremeMove   float64
+	Scaling								 int
 }
 
 type CurrentMove struct {
@@ -62,7 +60,7 @@ func DecodeFile(fileName string) []Behaviour {
 			continue
 		}
 		behaviour := Behaviour{}
-		_, err := fmt.Sscanf(line, "WITHIN AREA ((%d,%d),(%d,%d)) FOR CASES BETWEEN %f AND %f CHANCE FOR SMALL MOVE IS %f WHERE SMALL MOVE IS %f OVER %d DAYS AND CHANCE FOR BIG MOVE IS %f WHERE BIG MOVE IS %f OVER %d DAYS WHILE GOING HOME IS %f AND EXTREME MOVE CHANCE IS %f", &behaviour.AreaXStart, &behaviour.AreaYStart, &behaviour.AreaXEnd, &behaviour.AreaYEnd, &behaviour.Min, &behaviour.Max, &behaviour.ChanceForSmallMove, &behaviour.MaximalSmallMove, &behaviour.MaximalSmallMoveTime, &behaviour.ChanceForBigMove, &behaviour.MaximalBigMove, &behaviour.MaximalBigMoveTime, &behaviour.ChanceForReturningHome, &behaviour.ChanceForExtremeMove)
+		_, err := fmt.Sscanf(line, "WITHIN AREA ((%d,%d),(%d,%d)) FOR CASES BETWEEN %f AND %f ALPHA %f DISTANCE FACTOR %f BETA %f TIME FACTOR %f STAY HOME CHANCE %f EXTREME MOVE CHANCE %f SCALING %d", &behaviour.AreaXStart, &behaviour.AreaYStart, &behaviour.AreaXEnd, &behaviour.AreaYEnd, &behaviour.Min, &behaviour.Max, &behaviour.Alpha, &behaviour.DistFact, &behaviour.Beta, &behaviour.TimeFact, &behaviour.ChanceForReturningHome, &behaviour.ChanceForExtremeMove, &behaviour.Scaling)
 		if err != nil {
 			log.Fatalf("[SCRIPT] Could not parse line %s: %s", line, err)
 		}
@@ -105,21 +103,32 @@ func (movement *ScriptMovement) Move(agentsAround []Agent, me Agent) (float64, f
 				movement.currentMove.y = 0
 				movement.currentMove.timeLeft = 0
 				return movement.currentMove.x, movement.currentMove.y
-			} else if randFloat() < behaviour.ChanceForBigMove {
-				movement.currentMove.x = randFloat()*behaviour.MaximalBigMove*2 - behaviour.MaximalBigMove
-				movement.currentMove.y = randFloat()*behaviour.MaximalBigMove*2 - behaviour.MaximalBigMove
-				movement.currentMove.timeLeft = behaviour.MaximalBigMoveTime/2 + rand.Intn(behaviour.MaximalBigMoveTime)/2
-				return movement.currentMove.x, movement.currentMove.y
-			} else if randFloat() < behaviour.ChanceForSmallMove {
-				movement.currentMove.x = randFloat()*behaviour.MaximalSmallMove*2 - behaviour.MaximalSmallMove
-				movement.currentMove.y = randFloat()*behaviour.MaximalSmallMove*2 - behaviour.MaximalSmallMove
-				movement.currentMove.timeLeft = behaviour.MaximalSmallMoveTime/2 + rand.Intn(behaviour.MaximalSmallMoveTime)/2
+			} else {
+				distanceInKm := getRandomDistanceTravelled(behaviour.Alpha, behaviour.DistFact) * float64(behaviour.Scaling)
+				timeSpent := getRandomTimeSpent(behaviour.Beta, behaviour.TimeFact) * float64(behaviour.Scaling)
+				direction := randFloat()* math.Pi * 2
+
+				// Magic number
+				pixelSizeInKm := 4.3
+				distance := distanceInKm / pixelSizeInKm
+
+				movement.currentMove.x = distance * math.Cos(direction)
+				movement.currentMove.y = distance * math.Sin(direction)
+				movement.currentMove.timeLeft = int(timeSpent)
 				return movement.currentMove.x, movement.currentMove.y
 			}
 		}
 	}
 
 	return randFloat()*.2 - .1, randFloat()*.2 - .1
+}
+
+func getRandomDistanceTravelled(alpha float64, distFact float64) float64 {
+	return math.Pow(distFact * randFloat(), 1 / (-1-alpha))
+}
+
+func getRandomTimeSpent(beta float64, timeFact float64) float64 {
+	return math.Pow(timeFact * randFloat(), 1 / (-1-beta))
 }
 
 func randFloat() float64 {
