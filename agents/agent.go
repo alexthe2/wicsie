@@ -12,6 +12,8 @@ type Agent struct {
 
 	Health   Status
 	Movement Movement
+
+	randomString string
 }
 
 func CreateAgent(x, y, width, height float64, movement Movement) *Agent {

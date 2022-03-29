@@ -1,6 +1,7 @@
 populationMap: "population.png"
 maskMap: "europe.png"
 behaviour: "example.behaviour"
+statsOut: "stats.csv"
 
 steps: 5000
 weight: 0.1

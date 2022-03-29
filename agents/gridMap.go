@@ -14,6 +14,7 @@ type GridMap struct {
 	width, height  int
 	ChunkSize      int
 	Cells          [][]Cell
+	Stats          [3]int
 }
 
 func CreateGridMap(width, height, chunkSize int) *GridMap {
@@ -51,6 +52,8 @@ func (gridMap *GridMap) clearGridMap() {
 }
 
 func (gridMap *GridMap) recalculateGridMap(agents []*Agent) {
+	gridMap.Stats = [3]int{0, 0, 0}
+
 	for _, agent := range agents {
 		corX := int(agent.X / float64(gridMap.ChunkSize))
 		corY := int(agent.Y / float64(gridMap.ChunkSize))
@@ -58,10 +61,13 @@ func (gridMap *GridMap) recalculateGridMap(agents []*Agent) {
 		switch agent.Health {
 		case Incubated, Healthy:
 			gridMap.Cells[corX][corY].Healthy++
+			gridMap.Stats[0]++
 		case Infected, UnknownInfected:
 			gridMap.Cells[corX][corY].Infected++
+			gridMap.Stats[1]++
 		case Cured:
 			gridMap.Cells[corX][corY].Cured++
+			gridMap.Stats[2]++
 		}
 	}
 }

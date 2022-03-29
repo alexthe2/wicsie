@@ -1,7 +1,6 @@
 package agents
 
 import (
-	"fmt"
 	"github.com/enriquebris/goconcurrentqueue"
 	"log"
 	"math/rand"
@@ -57,20 +56,8 @@ func (gs *ParallelGridSpread) Infect(agent *Agent) {
 		NextHealth:         Incubated,
 		TimeUntilNextState: calculateTime(constants.KBaseTimeUntilIncubation, constants.KVarianceInTimeUntilIncubation),
 	})
+
 	gs.trackedList = append(gs.trackedList, agent)
-}
-
-func (gs *ParallelGridSpread) parallelInfect(agent *Agent) bool {
-	if _, exists := gs.trackedMap.Load(agent); exists {
-		return false
-	}
-
-	gs.trackedMap.Store(agent, NextStage{
-		NextHealth:         Incubated,
-		TimeUntilNextState: calculateTime(constants.KBaseTimeUntilIncubation, constants.KVarianceInTimeUntilIncubation),
-	})
-
-	return true
 }
 
 func (gs *ParallelGridSpread) parallelHandleTracked() {
@@ -85,6 +72,7 @@ func (gs *ParallelGridSpread) parallelMoveHealth(agent *Agent) bool {
 	trackA, ok := gs.trackedMap.Load(agent)
 	if !ok {
 		gs.LOGGER.Println("Agent not found in tracked map")
+		return false
 	}
 	track := trackA.(NextStage)
 
@@ -124,13 +112,10 @@ func (gs *ParallelGridSpread) parallelHandleNew(agents []*Agent) {
 			wg.Add(len(neighbours))
 			for _, partner := range neighbours {
 				go func(partner *Agent) {
-					fmt.Print(".")
 					if partner.Health == Healthy && rand.Float64() < constants.KProbabilityOfInfection {
-						if gs.parallelInfect(partner) {
-							err := queue.Enqueue(partner)
-							if err != nil {
-								gs.LOGGER.Println("Error enqueuing partner: ", err)
-							}
+						err := queue.Enqueue(partner)
+						if err != nil {
+							gs.LOGGER.Println("Error enqueuing partner: ", err)
 						}
 					}
 					wg.Done()

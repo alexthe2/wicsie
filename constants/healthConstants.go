@@ -12,4 +12,4 @@ const KVarianceInTimeUntilRecovery = 5
 const KBaseTimeUntilProtectionAfterCovidOver = 200
 const KVarianceInTimeUntilProtectionAfterCovidOver = 100
 
-const KProbabilityOfInfection = 0.1
+const KProbabilityOfInfection = 0.8

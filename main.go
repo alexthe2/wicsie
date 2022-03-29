@@ -24,6 +24,7 @@ type config struct {
 	Behaviour     string  `yaml:"behaviour"`
 	Steps         int     `yaml:"steps"`
 	Weight        float64 `yaml:"weight"`
+	StatsOut      string  `yaml:"statsOut"`
 }
 
 type spreadingPoint struct {
@@ -89,13 +90,16 @@ func preInfectSystem(simulation *simulation.Simulation, LOGGER *log.Logger) {
 	}
 }
 
-func runSimulation(simulation *simulation.Simulation, board *drawing.Board, grid *agents.GridMap, config config) {
+func runSimulation(simu *simulation.Simulation, board *drawing.Board, grid *agents.GridMap, config config) {
+	dw := simulation.CreateDataWriter(fmt.Sprintf("out/%s", config.StatsOut))
+
 	for i := 0; i < config.Steps; i++ {
-		simulation.Step()
-		grid.UpdateGridMap(simulation.GetAgents())
+		simu.Step()
+		grid.UpdateGridMap(simu.GetAgents())
 
 		board.DrawGridMap(*grid)
 		board.SaveBoard(fmt.Sprintf("out/raw/boardgrid%d.png", i))
+		dw.Write(i, *grid)
 	}
 }
 

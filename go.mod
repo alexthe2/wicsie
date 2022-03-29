@@ -3,6 +3,7 @@ module wicsie
 go 1.18
 
 require (
+	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5 // indirect
 	github.com/enriquebris/goconcurrentqueue v0.6.3 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/go-yaml/yaml v2.1.0+incompatible // indirect
