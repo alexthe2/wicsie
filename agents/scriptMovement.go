@@ -12,15 +12,15 @@ import (
 type Behaviour struct {
 	AreaXStart, AreaXEnd, AreaYStart, AreaYEnd int
 
-	Min, Max             float64
-	Alpha								 float64
-	DistFact   					 float64
-	Beta                 float64
-	TimeFact             float64
+	Min, Max float64
+	Alpha    float64
+	DistFact float64
+	Beta     float64
+	TimeFact float64
 
 	ChanceForReturningHome float64
 	ChanceForExtremeMove   float64
-	Scaling								 int
+	Scaling                int
 }
 
 type CurrentMove struct {
@@ -80,7 +80,7 @@ func CreateScriptMovement(gridMap *GridMap, behaviours []Behaviour, colorMap [][
 }
 
 func (movement *ScriptMovement) Move(agentsAround []Agent, me Agent) (float64, float64) {
-	if movement.colorMap[int(me.X)%504][int(me.Y)%599] == 0 {
+	if movement.colorMap[int(me.Y)][int(me.X)] == 0 {
 		movement.currentMove.timeLeft = 0
 		return 0, 0
 	}
@@ -106,7 +106,7 @@ func (movement *ScriptMovement) Move(agentsAround []Agent, me Agent) (float64, f
 			} else {
 				distanceInKm := getRandomDistanceTravelled(behaviour.Alpha, behaviour.DistFact) * float64(behaviour.Scaling)
 				timeSpent := getRandomTimeSpent(behaviour.Beta, behaviour.TimeFact) * float64(behaviour.Scaling)
-				direction := randFloat()* math.Pi * 2
+				direction := randFloat() * math.Pi * 2
 
 				// Magic number
 				pixelSizeInKm := 4.3
@@ -124,11 +124,11 @@ func (movement *ScriptMovement) Move(agentsAround []Agent, me Agent) (float64, f
 }
 
 func getRandomDistanceTravelled(alpha float64, distFact float64) float64 {
-	return math.Pow(distFact * randFloat(), 1 / (-1-alpha))
+	return math.Pow(distFact*randFloat(), 1/(-1-alpha))
 }
 
 func getRandomTimeSpent(beta float64, timeFact float64) float64 {
-	return math.Pow(timeFact * randFloat(), 1 / (-1-beta))
+	return math.Pow(timeFact*randFloat(), 1/(-1-beta))
 }
 
 func randFloat() float64 {

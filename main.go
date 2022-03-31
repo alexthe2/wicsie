@@ -10,6 +10,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"runtime"
 	"time"
 	"wicsie/agents"
 	"wicsie/constants"
@@ -105,6 +106,9 @@ func runSimulation(simu *simulation.Simulation, board *drawing.Board, grid *agen
 
 func main() {
 	LOGGER := log.New(os.Stdout, "[MAIN] ", log.Ltime)
+	LOGGER.Printf("Starting simulation\n")
+	LOGGER.Printf("Found %d cores\n", runtime.NumCPU())
+	LOGGER.Printf("Using %d cores\n", runtime.GOMAXPROCS(runtime.NumCPU()))
 
 	var config config
 	config.readConfig(LOGGER)
@@ -118,6 +122,7 @@ func main() {
 
 	simu, grid, w, h := createSimulation(config)
 	preInfectSystem(simu, LOGGER)
+	simu.InitInfect(0.1)
 	board := drawing.CreateBoard(w, h, mask, 1, config.Weight)
 	runSimulation(simu, board, grid, config)
 }
