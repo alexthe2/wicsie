@@ -122,7 +122,6 @@ func main() {
 
 	simu, grid, w, h := createSimulation(config)
 	preInfectSystem(simu, LOGGER)
-	simu.InitInfect(0.1)
 	board := drawing.CreateBoard(w, h, mask, 1, config.Weight)
 	runSimulation(simu, board, grid, config)
 }
