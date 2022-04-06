@@ -1,8 +1,8 @@
 # What if Covid started in Europe (WiCsiE)
 What if Covid started in Europe - A simulation for Scientific Computing at the RUG
 
-## Paper
-The paper can is in the repository under WICSIE_PAPER.pdf
+## Paper & Video
+The paper can is in the repository under WICSIE_PAPER.pdf, the resulting simulation [here](https://www.youtube.com/watch?v=jUdli3WGG-8)
 
 ## What is WICSIE
 WICSIE is a simulation that was created to simulate the spread of infcetious diseases throughout Europe
